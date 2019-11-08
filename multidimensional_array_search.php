@@ -88,6 +88,24 @@ function recursive_array_search($needle, $haystack) {
 }
 
 
+function recursive_array_search_tf($needle, $haystack, $currentKey = '') {
+    foreach($haystack as $key=>$value) {
+        if (is_array($value)) {
+            $nextKey = recursive_array_search_tf($needle,$value, $currentKey . '[' . $key . ']');
+            if ($nextKey) {
+                return $nextKey;
+            }
+        }
+        else if(preg_match("+$needle$+", "$value")) {
+//            return is_numeric($key) ? $currentKey . '[' .$key . ']' : $currentKey . '["' .$key . '"]';
+              return true;
+        }
+    }
+    return false;
+}
+
+
+
 
 $ip = '64.203.126.58';
 $pattern = '/.*[0-9]* permit ipv4 any host ' . "$ip" . '$/';
@@ -133,6 +151,10 @@ print_r("\n\n");
 
 $matches = recursive_array_search($pattern, $arr);
 print_r($matches);
+print_r("\n\n");
+
+$found = recursive_array_search_tf($pattern, $arr);
+print_r($found);
 
 ?>
 
