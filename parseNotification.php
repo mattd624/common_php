@@ -12,14 +12,14 @@ function parseNotification($domDoc){
 
     // Create sObject and fill fields provided in notification
     $sObjectNode = $domDoc->getElementsByTagName("sObject")->item(0);
-    $sObjType = $sObjectNode->getAttribute("type");
+    /*$sObjType = $sObjectNode->getAttribute("type");
     if (substr_count($sObjType,"sf:"))
     {
         $sObjType = substr($sObjType,3);
     }
     //$result["sObject"] = new SObject($sObjType);
     //$result["sObject"]->type = $sObjType;
-
+    */
     $sObjectNodes = $domDoc->getElementsByTagNameNS('urn:sobject.enterprise.soap.sforce.com','*');
     //$result["sObject"]->fieldnames = array();
     $count = 0;

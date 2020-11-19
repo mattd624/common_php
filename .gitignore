@@ -1,0 +1,12 @@
+vendor*
+src*
+composer*
+creds.php
+hooks.php
+*.user*
+*wsdl*
+*pthreads*
+*toolkit*
+*_old*
+phpgeo*
+test.*

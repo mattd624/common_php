@@ -35,7 +35,7 @@ function array_values_recursive($ary)
 // Function to recursively search for all values matching a pattern and return the array path 
 // Modified from a version on geeksforgeeks.org
 $return_vals = [];
-function array_search_id($search_value, $array, $id_path) { 
+function array_search_id($search_value, $array, $id_path = null) { 
 global $return_vals;      
     if(is_array($array) && count($array) > 0) { 
           
@@ -45,20 +45,25 @@ global $return_vals;
 print_r($temp_path); 
               
             // Adding current key to search path 
-            array_push($temp_path, $key); 
+            if (is_int($key)) {
+              array_push($temp_path,$key);
+            } else { 
+              array_push($temp_path, "'$key'"); 
+            }
   
             // Check if this value is an array 
             // with atleast one element 
             if(is_array($value) && count($value) > 0) { 
-                $res_path = array_search_id( 
-                        $search_value, $value, $temp_path); 
+                $res_path = array_search_id($search_value, $value, $temp_path); 
   
                 //if ($res_path != null) { 
                 //    return $res_path; 
                 //} 
             } 
             else if(preg_match($search_value, $value)) { 
-                $return_vals[] = join(" --> ", $temp_path) . ' ==> ' . $value; 
+                //$return_vals[] = "[" . join("][", $temp_path) . '] ==> ' . $value; 
+                //$return_vals[] =  "[" . join("][", $temp_path) . "]"; 
+                $return_vals[] =  $temp_path; 
             } 
         }
         if (!empty($return_vals)) {
@@ -141,20 +146,27 @@ $arr = Array
 );
 
 
-$array_values = array_values_recursive($arr);
-print_r($array_values);
+$array_values_recursive = array_values_recursive($arr);
+print_r("\narray_values_recursive:");
+print_r($array_values_recursive);
 print_r("\n\n");
 
-$search_path = array_search_id($pattern, $arr, array('$')); 
-print_r($search_path);
+//$array_search_id = array_search_id($pattern, $arr, array('')); 
+$array_search_id = array_search_id($pattern, $arr, array()); 
+print_r("\narray_search_id:");
+print_r($array_search_id);
+print_r("\n\n");
+foreach ($array_search_id as $a) {
+  print_r($arr[$a[0]][$a[1]]);
+}
+$recursive_array_search = recursive_array_search($pattern, $arr);
+print_r("\nrecursive_array_search:");
+print_r($recursive_array_search);
 print_r("\n\n");
 
-$matches = recursive_array_search($pattern, $arr);
-print_r($matches);
-print_r("\n\n");
-
-$found = recursive_array_search_tf($pattern, $arr);
-print_r($found);
+$recursive_array_search_tf = recursive_array_search_tf($pattern, $arr);
+print_r("\nrecursive_array_search_tf:");
+print_r($recursive_array_search_tf);
 
 ?>
 

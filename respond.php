@@ -11,3 +11,15 @@ print '<?xml version="1.0" encoding="UTF-8"?>
           </soapenv:Body>
       </soapenv:Envelope>';
 }
+
+function respond_early() {
+  
+                                                                                      heavylog("\nCLEARING OUTPUT BUFFER AND RESPONDING \"TRUE\" TO SF");
+  if (!empty(ob_get_contents())) ob_clean();
+  respond('true');
+  header('Connection: close');
+  header('Content-Length: '.ob_get_length());
+  if (!empty(ob_get_contents())) ob_end_flush();
+  if (!empty(ob_get_contents())) ob_flush();
+  flush();
+}
