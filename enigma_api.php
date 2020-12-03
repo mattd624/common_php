@@ -1,6 +1,5 @@
 <?php
 
-
 //////////////////////////   ENIGMA FUNCTIONS   //////////////////////////////////
 
 
@@ -50,13 +49,13 @@ input	$table = table available for querying in Enigma API  Example: 'hst'
 	$where_arr = array like this, where the first one lacks a conjunction:	[
 					  0 => ['site_code', 'LIKE', 'aosn'],
 					  1 => ['AND', 'hst_ip','LIKE','10.10.'],
-                                          2 => ['OR', 'hst_dsc','LIKE','-ap-']
+                      2 => ['OR', 'hst_dsc','LIKE','-ap-']
 					];
 */
   global $api_url;
   global $function;
   $function = __FUNCTION__;
-//                                                                                        heavylog("FUNCTION $function CALLED!");
+                                                                                        heavylog("FUNCTION $function CALLED!");
   $action   = '?action=get_data';
   $select = '&select=' . $table . '_id,' . implode(',',$select_arr) . '&from=' . $table;
   $where = '';
@@ -72,7 +71,7 @@ input	$table = table available for querying in Enigma API  Example: 'hst'
       }
 //print_r($wh);
       switch ($wh) {
-        case (strtoupper($wh[2]) === 'LIKE'):
+        case (preg_match('/.*LIKE.*/', strtoupper($wh[2]))):
           $where = $where . $conj_str . $wh[1].'+' . $wh[2] . '+%27%25' . $wh[3] . '%25%27';
           break;
         case (preg_match('/(<=|>=|[\<\>])/', $wh[3]) ? true : false):
@@ -82,14 +81,19 @@ input	$table = table available for querying in Enigma API  Example: 'hst'
           $where = $where . $conj_str . $wh[1].'+' . $wh[2] . '+%27' . $wh[3] . '%27';
       }
     }
+    $where = str_replace(' ','+',$where);
   }
   
   $limit_str = !empty($limit) ? '&limit=' . $limit : null;
   $url = "$api_url$action$select$where$limit_str";
-											writelog("\n$url");
+					                                				print_r("\n$url\n");
+					                                				writelog("$url");
   $result = CallAPI($api_url.$action.$select.$where.$limit_str);
   $result_arr = json_decode(str_replace("},\n]", "}\n]", $result));
+print_r("\nresult_arr[0]->{table.'_id'}: ");
+print_r($result_arr[0]->{$table . '_id'});
   if (!isset($result_arr[0]->{$table . '_id'}))						writelog("\nFailed to get data from table: $table\n");
+  if (!isset($result_arr[0]->{$table . '_id'}))						writelog("$result_arr");
   $function = '';
   return isset($result_arr) ? $result_arr : 0;
 }
@@ -105,7 +109,19 @@ This function assumes the object was found using get_data()
                                                                                         heavylog("FUNCTION " . __FUNCTION__ . " CALLED WITH $action ACTION!");
   global $api_url;
   global $function;
+  global $protected_patterns;
+  $protected_patterns = ['/template/','/^10\.99\.99\./'];
+  $new_stuff = ['new_node_ip','new_node_name'];
+  foreach ($protected_patterns as $p) {
+    foreach ($new_stuff as $n) {
+      if (($action !== 'add_site') AND (isset($sf_obj->$n)) AND (preg_match($p, $sf_obj->$n))) {
+        print_r("\nSkipping protected node");
+        return 0;
+      }
+    }
+  }  
   $function = __FUNCTION__;
+
   $url_arr = [];
   $url_arr[] = $api_url . '?action=' . $action;
   foreach ($sf_obj as $param_name => $param_val) {

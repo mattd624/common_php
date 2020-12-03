@@ -3,18 +3,22 @@
 define ("SOL_IP", 0);
 define ("IP_TTL", 4);    // On OSX, use '4' instead of '2'.
 
+if (!empty($argv[1])) {
+  $arg = $argv[1];
+  print_r(get_last_hop($arg));
+  print_r("\n");
+}
+
 function get_last_hop($ip) {
 
 //// A specialized get_last_hop in which if there is a timeout we are assuming it is happening at the destination IP, and returning the IP before it. 
 //// If during the trace we get to the destination, then we simply return $prev_addr
 
 
-    
     $dest_url = $ip;   // Fill in your own URL here, or use $argv[1] to fetch from commandline.
-    $maximum_hops = 10;
+    $maximum_hops = 30;
     $port = 33434;  // Standard port that traceroute programs use. Could be anything actually.
     $recv_addr = '';
-    
     // Get IP from URL
     $dest_addr = gethostbyname ($dest_url);
     //print "Tracerouting to destination: $dest_addr\n";
@@ -22,6 +26,7 @@ function get_last_hop($ip) {
     $ttl = 1;
     while ($ttl < $maximum_hops) {
         $prev_addr = $recv_addr;
+        //print_r("\nprev_addr: $prev_addr");
         // Create ICMP and UDP sockets
         $recv_socket = socket_create (AF_INET, SOCK_RAW, getprotobyname ('icmp'));
         $send_socket = socket_create (AF_INET, SOCK_DGRAM, getprotobyname ('udp'));
@@ -54,7 +59,7 @@ function get_last_hop($ip) {
     
             // Print statistics
             //printf ("%3d   %-15s  %.3f ms  %s\n", $ttl, $recv_addr,  $roundtrip_time, '');
-            //print_r("\n$recv_addr");
+            //print_r("\nrecv_addr: $recv_addr");
         } else {
             // A timeout has occurred, display a timeout
             //printf ("%3d   (timeout)\n", $ttl);
@@ -72,9 +77,9 @@ function get_last_hop($ip) {
         if ($recv_addr == $dest_addr) return $prev_addr;
     }
 }
-    
+
+
 //print_r(get_last_hop('207.177.170.166'));
 //print_r(get_last_hop('104.254.100.138'));
 
-?>
 

@@ -15,8 +15,8 @@ use phpseclib\Crypt\RSA;
 use phpseclib\Net\SSH2;
 use Amp\Parallel\Worker;
 use Amp\Promise;
-//use UBI\Ssh;
-
+use UBI\Ssh;
+use UBI\VLookup;
 //function my_autoloader($class) {
 //  include 'src/' . $class . '.php';
 //}
@@ -48,9 +48,6 @@ global $cmd;
   }
 }
 
-spl_autoload_register('ssh_get_data');
-
-
 
 print_r(get_defined_functions()['user']);
 
@@ -75,17 +72,51 @@ echo $ssh->exec("ls -la");
 //print_r(get_defined_functions());
 print_r(array_diff(get_declared_classes(),$predefinedClasses));
 
+$records = array();
+$opp1 = new stdClass();
+$opp1->Id = 'kjhaldkfjg002480';
+$opp1->Name = 'A-S0992634';
+$opp1->IP = '192.168.89.34';
+
+$opp2 = new stdClass();
+$opp2->Id = 'kjhaldkfjg002499';
+$opp2->Name = 'A-S0992667';
+$opp2->IP = '192.168.45.78';
+
+array_push($records, $opp1, $opp2);
+print_r($records);
+
+function indexed_response($sf_api_response, $key = 'Id') {
+  $output_arr = array();
+  foreach ($sf_api_response as $record) {
+    $k = $record->$key;
+    $props = array_keys((array)$record);
+    $output_arr[$k] = new stdClass();
+    foreach ($props as $prop) {
+      $output_arr[$k]->$prop = $record->$prop;
+    }
+  }
+  return $output_arr;
+}
 
 
+$index_ip = indexed_response($records, 'IP');
+$index_id = indexed_response($index_ip, 'Id');
 
+print_r($index_ip);
+print_r($index_id);
 
+/*
+$lookup = new VLookup;
+print_r($lookup->arrVLookup($opps,'A-S0992667','Name','Id'));
 
+/*
 $ips = ['10.10.136.8','10.10.136.6'];
 $port = '220';
 $user = 'root';
 $pws = ['ubi@Su1!!','ubi@su1!!'];
 $cmd = 'ls -la';
-
+*/
 
 /*
 $promises = [];

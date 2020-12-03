@@ -2,24 +2,21 @@
 
 //Requires commonDirLocation.php to be one directory level up from the directory this file is in. Then it can find commmon files including composer stuff. 
 
-// Check out this tutorial:     https://vegibit.com/composer-autoloading-tutorial/
 $predefinedClasses = get_declared_classes(); 
 require __DIR__ . '/commonDirLocation.php';
 require COMMON_PHP_DIR . '/vendor/autoload.php';
 
 $loader = new \Composer\Autoload\ClassLoader();
 $loader->addPsr4('phpseclib\\', COMMON_PHP_DIR . '/vendor/phpseclib/phpseclib/phpseclib');
-//$loader->addClassMap(['soapclient']);
 //$loader->addPsr4('UBI\\', COMMON_PHP_DIR . '/src');
 $loader->register();
+
 use phpseclib\Crypt\RSA;
 use phpseclib\Net\SSH2;
 use Amp\Parallel\Worker;
 use Amp\Promise;
 use UBI\Ssh;
 use UBI\VLookup;
-//use soapclient\SObject;
-//use sForce\SforceEnterpriseClient;
 //function my_autoloader($class) {
 //  include 'src/' . $class . '.php';
 //}
@@ -55,7 +52,6 @@ global $cmd;
 
 print_r(get_defined_functions()['user']);
 
-print_r($loader->findFile('SObject'));
 /*
 $ip = '64.203.113.66';
 $port = '220';
