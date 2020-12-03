@@ -5,6 +5,7 @@ creds.php
 hooks.php
 *.user*
 *wsdl*
+sf_org.php
 *pthreads*
 *toolkit*
 *_old*
